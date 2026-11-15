@@ -1,0 +1,1289 @@
+<!DOCTYPE html>
+<html lang="id" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cahaya Ilmu — Portal Artikel & Kajian Islami Modern</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Plus Jakarta Sans & Merriweather -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,400;0,700;1,400&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+                        serif: ['"Merriweather"', 'serif'],
+                    },
+                    colors: {
+                        emerald: {
+                            50: '#ecfdf5',
+                            100: '#d1fae5',
+                            200: '#a7f3d0',
+                            300: '#6ee7b7',
+                            400: '#34d399',
+                            500: '#10b981',
+                            600: '#059669',
+                            700: '#047857',
+                            800: '#065f46',
+                            900: '#064e3b',
+                            950: '#022c22',
+                        },
+                        amber: {
+                            400: '#fbbf24',
+                            500: '#f59e0b',
+                            600: '#d97706',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Custom scrollbar & smooth transitions */
+        body {
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+        .article-body p {
+            margin-bottom: 1.35rem;
+            line-height: 1.85;
+        }
+        .fade-in {
+            animation: fadeIn 0.35s ease-out forwards;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        /* Hide scrollbar for horizontal category pills on mobile */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+<body class="bg-[#fafaf8] text-slate-800 dark:bg-slate-950 dark:text-slate-100 min-h-screen flex flex-col font-sans antialiased selection:bg-emerald-600 selection:text-white">
+
+    <!-- Toast Notification Container -->
+    <div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+    <!-- Header / Navbar -->
+    <header class="sticky top-0 z-40 w-full backdrop-blur-md bg-white/90 dark:bg-slate-900/90 border-b border-slate-200/80 dark:border-slate-800 transition-colors duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16 md:h-20">
+                
+                <!-- Brand Logo -->
+                <div class="flex items-center gap-3 cursor-pointer group" onclick="navigateTo('beranda')">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-600 to-emerald-800 flex items-center justify-center text-white shadow-md shadow-emerald-600/20 group-hover:scale-105 transition-transform">
+                        <i data-lucide="book-open-check" class="w-5 h-5 text-amber-300"></i>
+                    </div>
+                    <div>
+                        <span class="font-serif font-bold text-lg md:text-xl tracking-tight text-slate-900 dark:text-white block leading-none">Cahaya<span class="text-emerald-600 dark:text-emerald-400">Ilmu</span></span>
+                        <span class="text-[11px] font-medium text-slate-500 dark:text-slate-400 tracking-wider uppercase">Portal Literasi Islami</span>
+                    </div>
+                </div>
+
+                <!-- Desktop Navigation (2 Main Menus: Beranda & Kategori) -->
+                <nav class="hidden md:flex items-center gap-2 lg:gap-4">
+                    <!-- Menu 1: Beranda -->
+                    <button id="nav-beranda" onclick="navigateTo('beranda')" class="nav-link px-4 py-2.5 rounded-xl text-sm font-semibold transition-all flex items-center gap-2 bg-emerald-50 text-emerald-700 dark:bg-emerald-950/80 dark:text-emerald-300">
+                        <i data-lucide="home" class="w-4 h-4"></i>
+                        <span>Beranda</span>
+                    </button>
+
+                    <!-- Menu 2: Kategori (Dropdown dengan 5 Sub-Menu) -->
+                    <div class="relative group" id="kategori-dropdown-wrapper">
+                        <button id="nav-kategori" onclick="navigateTo('kategori', 'Semua')" class="nav-link px-4 py-2.5 rounded-xl text-sm font-semibold text-slate-600 hover:text-emerald-700 hover:bg-slate-100/80 dark:text-slate-300 dark:hover:text-emerald-300 dark:hover:bg-slate-800/80 transition-all flex items-center gap-2">
+                            <i data-lucide="layers" class="w-4 h-4"></i>
+                            <span>Kategori</span>
+                            <i data-lucide="chevron-down" class="w-4 h-4 transition-transform duration-200 group-hover:rotate-180"></i>
+                        </button>
+
+                        <!-- Dropdown Sub-menu -->
+                        <div class="absolute left-0 mt-2 w-64 rounded-2xl bg-white dark:bg-slate-900 shadow-xl border border-slate-100 dark:border-slate-800 py-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 transform origin-top-left z-50">
+                            <div class="px-4 py-2 border-b border-slate-100 dark:border-slate-800">
+                                <p class="text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">Pilih Topik Kajian</p>
+                            </div>
+                            <button onclick="navigateTo('kategori', 'Akidah')" class="w-full text-left px-4 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-emerald-50 dark:hover:bg-emerald-950/60 hover:text-emerald-700 dark:hover:text-emerald-300 flex items-center justify-between transition-colors">
+                                <span class="flex items-center gap-2.5"><span class="w-2 h-2 rounded-full bg-emerald-500"></span>Akidah</span>
+                                <span class="text-xs text-slate-400" id="count-Akidah">0</span>
+                            </button>
+                            <button onclick="navigateTo('kategori', 'Manhaj')" class="w-full text-left px-4 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-emerald-50 dark:hover:bg-emerald-950/60 hover:text-emerald-700 dark:hover:text-emerald-300 flex items-center justify-between transition-colors">
+                                <span class="flex items-center gap-2.5"><span class="w-2 h-2 rounded-full bg-teal-500"></span>Manhaj</span>
+                                <span class="text-xs text-slate-400" id="count-Manhaj">0</span>
+                            </button>
+                            <button onclick="navigateTo('kategori', 'Fikih')" class="w-full text-left px-4 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-emerald-50 dark:hover:bg-emerald-950/60 hover:text-emerald-700 dark:hover:text-emerald-300 flex items-center justify-between transition-colors">
+                                <span class="flex items-center gap-2.5"><span class="w-2 h-2 rounded-full bg-amber-500"></span>Fikih</span>
+                                <span class="text-xs text-slate-400" id="count-Fikih">0</span>
+                            </button>
+                            <button onclick="navigateTo('kategori', 'Akhlak dan Nasihat')" class="w-full text-left px-4 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-emerald-50 dark:hover:bg-emerald-950/60 hover:text-emerald-700 dark:hover:text-emerald-300 flex items-center justify-between transition-colors">
+                                <span class="flex items-center gap-2.5"><span class="w-2 h-2 rounded-full bg-rose-500"></span>Akhlak dan Nasihat</span>
+                                <span class="text-xs text-slate-400" id="count-Akhlak dan Nasihat">0</span>
+                            </button>
+                            <button onclick="navigateTo('kategori', 'Artikel Remaja Muslim')" class="w-full text-left px-4 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-emerald-50 dark:hover:bg-emerald-950/60 hover:text-emerald-700 dark:hover:text-emerald-300 flex items-center justify-between transition-colors">
+                                <span class="flex items-center gap-2.5"><span class="w-2 h-2 rounded-full bg-indigo-500"></span>Artikel Remaja Muslim</span>
+                                <span class="text-xs text-slate-400" id="count-Artikel Remaja Muslim">0</span>
+                            </button>
+                        </div>
+                    </div>
+                </nav>
+
+                <!-- Right Controls: Theme Toggle, Admin Panel Button & Mobile Menu -->
+                <div class="flex items-center gap-2 sm:gap-3">
+                    <!-- Dark/Light Mode Toggle -->
+                    <button id="theme-toggle" onclick="toggleTheme()" aria-label="Ubah Mode Tampilan" title="Mode Siang / Malam" class="p-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-amber-400 transition-all focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                        <i data-lucide="moon" id="icon-moon" class="w-5 h-5 block dark:hidden"></i>
+                        <i data-lucide="sun" id="icon-sun" class="w-5 h-5 hidden dark:block"></i>
+                    </button>
+
+                    <!-- Admin Panel Button -->
+                    <button id="nav-admin" onclick="navigateTo('admin')" class="px-3.5 sm:px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white text-sm font-semibold shadow-sm shadow-emerald-600/20 transition-all flex items-center gap-2">
+                        <i data-lucide="pen-square" class="w-4 h-4"></i>
+                        <span class="hidden sm:inline">Panel Admin</span>
+                        <span class="sm:hidden">Admin</span>
+                    </button>
+
+                    <!-- Mobile Menu Drawer Toggle -->
+                    <button id="mobile-menu-btn" onclick="toggleMobileMenu()" aria-label="Menu Utama" class="md:hidden p-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors">
+                        <i data-lucide="menu" id="mobile-menu-icon" class="w-5 h-5"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Navigation Drawer -->
+        <div id="mobile-menu" class="hidden md:hidden border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-4 pt-3 pb-5 space-y-2 shadow-xl">
+            <button onclick="navigateTo('beranda'); toggleMobileMenu()" class="w-full text-left px-4 py-3 rounded-xl text-sm font-semibold flex items-center gap-3 bg-emerald-50 dark:bg-emerald-950/70 text-emerald-700 dark:text-emerald-300">
+                <i data-lucide="home" class="w-4 h-4"></i>
+                <span>Beranda (Artikel Terbaru)</span>
+            </button>
+            
+            <div class="pt-2 pb-1 px-4">
+                <p class="text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">Menu Kategori</p>
+            </div>
+            <div class="grid grid-cols-1 gap-1 pl-2">
+                <button onclick="navigateTo('kategori', 'Semua'); toggleMobileMenu()" class="w-full text-left px-4 py-2.5 rounded-xl text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center gap-2.5">
+                    <i data-lucide="layout-grid" class="w-4 h-4 text-emerald-600"></i> Semua Kategori
+                </button>
+                <button onclick="navigateTo('kategori', 'Akidah'); toggleMobileMenu()" class="w-full text-left px-4 py-2.5 rounded-xl text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center gap-2.5">
+                    <span class="w-2 h-2 rounded-full bg-emerald-500"></span> Akidah
+                </button>
+                <button onclick="navigateTo('kategori', 'Manhaj'); toggleMobileMenu()" class="w-full text-left px-4 py-2.5 rounded-xl text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center gap-2.5">
+                    <span class="w-2 h-2 rounded-full bg-teal-500"></span> Manhaj
+                </button>
+                <button onclick="navigateTo('kategori', 'Fikih'); toggleMobileMenu()" class="w-full text-left px-4 py-2.5 rounded-xl text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center gap-2.5">
+                    <span class="w-2 h-2 rounded-full bg-amber-500"></span> Fikih
+                </button>
+                <button onclick="navigateTo('kategori', 'Akhlak dan Nasihat'); toggleMobileMenu()" class="w-full text-left px-4 py-2.5 rounded-xl text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center gap-2.5">
+                    <span class="w-2 h-2 rounded-full bg-rose-500"></span> Akhlak dan Nasihat
+                </button>
+                <button onclick="navigateTo('kategori', 'Artikel Remaja Muslim'); toggleMobileMenu()" class="w-full text-left px-4 py-2.5 rounded-xl text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center gap-2.5">
+                    <span class="w-2 h-2 rounded-full bg-indigo-500"></span> Artikel Remaja Muslim
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN CONTENT CONTAINER -->
+    <main class="flex-grow">
+
+        <!-- ==================== VIEW 1: BERANDA ==================== -->
+        <section id="view-beranda" class="fade-in">
+            <!-- Hero Banner -->
+            <div class="relative overflow-hidden bg-gradient-to-br from-emerald-900 via-emerald-800 to-slate-900 text-white py-12 sm:py-16 lg:py-20">
+                <!-- Decorative Pattern -->
+                <div class="absolute inset-0 opacity-10 pointer-events-none" style="background-image: radial-gradient(#fbbf24 1px, transparent 1px); background-size: 24px 24px;"></div>
+                <div class="absolute -right-24 -top-24 w-96 h-96 bg-emerald-500/20 rounded-full blur-3xl pointer-events-none"></div>
+                <div class="absolute -left-24 -bottom-24 w-80 h-80 bg-amber-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+                    <div class="max-w-3xl">
+                        <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-950/60 border border-emerald-500/30 text-amber-300 text-xs font-semibold mb-5">
+                            <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
+                            <span>Menebar Ilmu Syar'i & Hikmah Kehidupan</span>
+                        </div>
+                        <h1 class="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold leading-tight mb-4 text-white">
+                            Menerangi Hati dengan <span class="text-amber-300">Ilmu yang Bermanfaat</span>
+                        </h1>
+                        <p class="text-emerald-100/90 text-base sm:text-lg leading-relaxed mb-8 max-w-2xl">
+                            Temukan kajian ringkas, mendalam, dan menenangkan seputar Akidah, Manhaj, Fikih ibadah, Akhlak mulia, hingga pembinaan karakter Remaja Muslim masa kini.
+                        </p>
+
+                        <!-- Search Bar -->
+                        <div class="relative max-w-xl">
+                            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                <i data-lucide="search" class="w-5 h-5 text-slate-400"></i>
+                            </div>
+                            <input type="text" id="home-search-input" oninput="handleHomeSearch(this.value)" placeholder="Cari judul artikel atau topik pembahasan..." class="w-full pl-12 pr-4 py-3.5 rounded-2xl bg-white/95 dark:bg-slate-900/95 text-slate-900 dark:text-white placeholder-slate-400 shadow-xl focus:outline-none focus:ring-2 focus:ring-amber-400 text-sm sm:text-base transition-all">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Category Access Bar -->
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-6 relative z-20">
+                <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-lg border border-slate-100 dark:border-slate-800 p-3 sm:p-4 flex items-center gap-2 overflow-x-auto no-scrollbar">
+                    <span class="text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 px-2 shrink-0">Jelajahi:</span>
+                    <button onclick="navigateTo('kategori', 'Akidah')" class="shrink-0 px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-emerald-50 hover:bg-emerald-600 text-emerald-700 hover:text-white dark:bg-emerald-950/60 dark:text-emerald-300 dark:hover:bg-emerald-600 dark:hover:text-white transition-all">Akidah</button>
+                    <button onclick="navigateTo('kategori', 'Manhaj')" class="shrink-0 px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-teal-50 hover:bg-teal-600 text-teal-700 hover:text-white dark:bg-teal-950/60 dark:text-teal-300 dark:hover:bg-teal-600 dark:hover:text-white transition-all">Manhaj</button>
+                    <button onclick="navigateTo('kategori', 'Fikih')" class="shrink-0 px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-amber-50 hover:bg-amber-600 text-amber-700 hover:text-white dark:bg-amber-950/60 dark:text-amber-300 dark:hover:bg-amber-600 dark:hover:text-white transition-all">Fikih</button>
+                    <button onclick="navigateTo('kategori', 'Akhlak dan Nasihat')" class="shrink-0 px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-rose-50 hover:bg-rose-600 text-rose-700 hover:text-white dark:bg-rose-950/60 dark:text-rose-300 dark:hover:bg-rose-600 dark:hover:text-white transition-all">Akhlak dan Nasihat</button>
+                    <button onclick="navigateTo('kategori', 'Artikel Remaja Muslim')" class="shrink-0 px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-indigo-50 hover:bg-indigo-600 text-indigo-700 hover:text-white dark:bg-indigo-950/60 dark:text-indigo-300 dark:hover:bg-indigo-600 dark:hover:text-white transition-all">Artikel Remaja Muslim</button>
+                </div>
+            </div>
+
+            <!-- Artikel Terbaru Section -->
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14">
+                <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8">
+                    <div>
+                        <div class="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 font-bold text-xs uppercase tracking-wider mb-1">
+                            <i data-lucide="clock" class="w-4 h-4"></i>
+                            <span>Publikasi Terkini</span>
+                        </div>
+                        <h2 class="font-serif text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white">Artikel Terbaru</h2>
+                    </div>
+                    <button onclick="navigateTo('kategori', 'Semua')" class="inline-flex items-center gap-1.5 text-sm font-semibold text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 transition-colors">
+                        <span>Lihat Semua Kategori</span>
+                        <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                    </button>
+                </div>
+
+                <!-- Grid Artikel Beranda -->
+                <div id="home-articles-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+                    <!-- Rendered dynamically via JS -->
+                </div>
+
+                <!-- Empty Search State -->
+                <div id="home-empty-state" class="hidden text-center py-16 bg-white dark:bg-slate-900 rounded-3xl border border-slate-100 dark:border-slate-800">
+                    <div class="w-16 h-16 rounded-2xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center mx-auto mb-4 text-slate-400">
+                        <i data-lucide="search-x" class="w-8 h-8"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-slate-800 dark:text-white mb-1">Artikel tidak ditemukan</h3>
+                    <p class="text-sm text-slate-500 dark:text-slate-400">Coba gunakan kata kunci pencarian lain atau jelajahi menu kategori.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== VIEW 2: KATEGORI ==================== -->
+        <section id="view-kategori" class="hidden fade-in max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+            <!-- Header Kategori -->
+            <div class="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-8 border border-slate-200/70 dark:border-slate-800 shadow-sm mb-8">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+                    <div>
+                        <span class="text-xs font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">Direktori Kajian</span>
+                        <h1 id="category-page-title" class="font-serif text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white mt-1">Semua Kategori Artikel</h1>
+                        <p id="category-page-desc" class="text-sm text-slate-500 dark:text-slate-400 mt-1">Menampilkan seluruh artikel Islami yang telah dipublikasikan.</p>
+                    </div>
+                    <div class="text-sm font-medium text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 px-4 py-2 rounded-xl self-start md:self-auto">
+                        Total: <span id="category-article-count" class="font-bold text-emerald-600 dark:text-emerald-400">0</span> Artikel
+                    </div>
+                </div>
+
+                <!-- 5 Sub-Menu Filter Pills + Semua -->
+                <div class="flex items-center gap-2 overflow-x-auto pb-2 no-scrollbar" id="category-filter-tabs">
+                    <button onclick="selectCategoryFilter('Semua')" data-cat="Semua" class="cat-tab shrink-0 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all bg-emerald-600 text-white shadow-sm">
+                        Semua Topik
+                    </button>
+                    <button onclick="selectCategoryFilter('Akidah')" data-cat="Akidah" class="cat-tab shrink-0 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-emerald-50 dark:hover:bg-slate-700">
+                        Akidah
+                    </button>
+                    <button onclick="selectCategoryFilter('Manhaj')" data-cat="Manhaj" class="cat-tab shrink-0 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-emerald-50 dark:hover:bg-slate-700">
+                        Manhaj
+                    </button>
+                    <button onclick="selectCategoryFilter('Fikih')" data-cat="Fikih" class="cat-tab shrink-0 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-emerald-50 dark:hover:bg-slate-700">
+                        Fikih
+                    </button>
+                    <button onclick="selectCategoryFilter('Akhlak dan Nasihat')" data-cat="Akhlak dan Nasihat" class="cat-tab shrink-0 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-emerald-50 dark:hover:bg-slate-700">
+                        Akhlak dan Nasihat
+                    </button>
+                    <button onclick="selectCategoryFilter('Artikel Remaja Muslim')" data-cat="Artikel Remaja Muslim" class="cat-tab shrink-0 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-emerald-50 dark:hover:bg-slate-700">
+                        Artikel Remaja Muslim
+                    </button>
+                </div>
+            </div>
+
+            <!-- Grid Artikel Kategori -->
+            <div id="category-articles-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+                <!-- Rendered via JS -->
+            </div>
+
+            <!-- Empty Category State -->
+            <div id="category-empty-state" class="hidden text-center py-16 bg-white dark:bg-slate-900 rounded-3xl border border-slate-100 dark:border-slate-800">
+                <div class="w-16 h-16 rounded-2xl bg-emerald-50 dark:bg-emerald-950/60 flex items-center justify-center mx-auto mb-4 text-emerald-600">
+                    <i data-lucide="folder-open" class="w-8 h-8"></i>
+                </div>
+                <h3 class="text-lg font-bold text-slate-800 dark:text-white mb-1">Belum ada artikel di kategori ini</h3>
+                <p class="text-sm text-slate-500 dark:text-slate-400 mb-5">Admin dapat menambahkan artikel baru untuk kategori ini melalui Panel Admin.</p>
+                <button onclick="navigateTo('admin')" class="px-5 py-2.5 rounded-xl bg-emerald-600 text-white text-sm font-semibold hover:bg-emerald-700 transition-colors">
+                    + Tambah Artikel Sekarang
+                </button>
+            </div>
+        </section>
+
+        <!-- ==================== VIEW 3: DETAIL BACA ARTIKEL ==================== -->
+        <section id="view-detail" class="hidden fade-in max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+            <!-- Top Navigation Bar -->
+            <div class="flex items-center justify-between gap-4 mb-6">
+                <button onclick="goBackFromDetail()" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 text-sm font-semibold shadow-sm transition-all">
+                    <i data-lucide="arrow-left" class="w-4 h-4"></i>
+                    <span>Kembali</span>
+                </button>
+
+                <button onclick="copyArticleLink()" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/70 text-emerald-700 dark:text-emerald-300 hover:bg-emerald-100 dark:hover:bg-emerald-900 text-sm font-semibold transition-all">
+                    <i data-lucide="share-2" class="w-4 h-4"></i>
+                    <span>Salin Tautan</span>
+                </button>
+            </div>
+
+            <!-- Article Container -->
+            <article class="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800 shadow-sm overflow-hidden">
+                <!-- Thumbnail Utama -->
+                <div class="relative aspect-video sm:aspect-[21/10] w-full bg-slate-200 dark:bg-slate-800 overflow-hidden">
+                    <img id="detail-thumbnail" src="" alt="Thumbnail Artikel" onerror="this.src='https://placehold.co/1200x600/065f46/ffffff?text=Cahaya+Ilmu'" class="w-full h-full object-cover">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent"></div>
+                </div>
+
+                <!-- Content Wrapper -->
+                <div class="p-6 sm:p-10 lg:p-12">
+                    <!-- Meta Info -->
+                    <div class="flex flex-wrap items-center gap-3 mb-4">
+                        <span id="detail-category" class="px-3.5 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300">
+                            Kategori
+                        </span>
+                        <span class="text-slate-400">•</span>
+                        <div class="flex items-center gap-1.5 text-xs sm:text-sm text-slate-500 dark:text-slate-400">
+                            <i data-lucide="calendar" class="w-4 h-4 text-emerald-600 dark:text-emerald-400"></i>
+                            <span id="detail-date">Tanggal</span>
+                        </div>
+                        <span class="text-slate-400">•</span>
+                        <div class="flex items-center gap-1.5 text-xs sm:text-sm text-slate-500 dark:text-slate-400">
+                            <i data-lucide="user-check" class="w-4 h-4 text-emerald-600 dark:text-emerald-400"></i>
+                            <span>Redaksi Cahaya Ilmu</span>
+                        </div>
+                    </div>
+
+                    <!-- Judul Artikel -->
+                    <h1 id="detail-title" class="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900 dark:text-white leading-snug mb-8">
+                        Judul Artikel
+                    </h1>
+
+                    <!-- Isi Artikel (Paragraf + Foto Dalam Isi Artikel) -->
+                    <div id="detail-content" class="article-body text-slate-700 dark:text-slate-300 text-base sm:text-lg">
+                        <!-- Rendered dynamically with inline photo -->
+                    </div>
+
+                    <!-- Footer Artikel -->
+                    <div class="mt-10 pt-6 border-t border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                        <div class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 italic">
+                            "Barangsiapa menempuh jalan untuk mencari ilmu, maka Allah akan mudahkan baginya jalan menuju surga." (HR. Muslim)
+                        </div>
+                        <button onclick="navigateTo('kategori', currentDetailCategory)" class="shrink-0 px-4 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-emerald-600 hover:text-white dark:hover:bg-emerald-600 text-slate-700 dark:text-slate-200 text-xs font-semibold transition-all">
+                            Artikel Sejenis →
+                        </button>
+                    </div>
+                </div>
+            </article>
+        </section>
+
+        <!-- ==================== VIEW 4: PANEL ADMIN ==================== -->
+        <section id="view-admin" class="hidden fade-in max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+            
+            <!-- Admin Header -->
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
+                <div>
+                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-100 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300 text-xs font-bold mb-2">
+                        <i data-lucide="shield-check" class="w-3.5 h-3.5"></i>
+                        <span>Dashboard Redaksi & Admin</span>
+                    </div>
+                    <h1 class="font-serif text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white">Kelola Konten Artikel</h1>
+                    <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">Tambahkan artikel baru dengan foto thumbnail dan foto ilustrasi di dalam isi bacaan.</p>
+                </div>
+                <div class="flex items-center gap-3">
+                    <button onclick="adminLogout()" class="self-start sm:self-auto px-4 py-2.5 rounded-xl bg-rose-50 dark:bg-rose-950/50 border border-rose-200 dark:border-rose-900 text-rose-700 dark:text-rose-300 hover:bg-rose-100 text-sm font-semibold transition-all flex items-center gap-2">
+                        <i data-lucide="log-out" class="w-4 h-4"></i>
+                        <span>Logout Admin</span>
+                    </button>
+                    <button onclick="navigateTo('beranda')" class="self-start sm:self-auto px-4 py-2.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 text-sm font-semibold shadow-sm transition-all flex items-center gap-2">
+                        <i data-lucide="eye" class="w-4 h-4 text-emerald-600"></i>
+                        <span>Lihat Publik</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                
+                <!-- Kolom Kiri: Form Input / Edit Artikel (7 kolom) -->
+                <div class="lg:col-span-7">
+                    <div class="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800 p-6 sm:p-8 shadow-sm">
+                        <div class="flex items-center justify-between pb-4 mb-6 border-b border-slate-100 dark:border-slate-800">
+                            <h2 id="admin-form-heading" class="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                                <i data-lucide="file-plus-2" class="w-5 h-5 text-emerald-600"></i>
+                                <span>Input Artikel Baru</span>
+                            </h2>
+                            <button type="button" id="cancel-edit-btn" onclick="resetAdminForm()" class="hidden text-xs font-semibold text-rose-600 hover:text-rose-700 bg-rose-50 dark:bg-rose-950/50 px-3 py-1.5 rounded-lg">
+                                Batal Edit
+                            </button>
+                        </div>
+
+                        <form id="admin-article-form" onsubmit="handleSaveArticle(event)" class="space-y-6">
+                            <input type="hidden" id="edit-article-id" value="">
+
+                            <!-- 1. Judul Artikel -->
+                            <div>
+                                <label for="input-title" class="block text-sm font-semibold text-slate-700 dark:text-slate-200 mb-2">
+                                    Judul Artikel <span class="text-rose-500">*</span>
+                                </label>
+                                <input type="text" id="input-title" required placeholder="Contoh: Keutamaan Menjaga Shalat Berjamaah di Awal Waktu" class="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm transition-all">
+                            </div>
+
+                            <!-- 2. Kategori Artikel -->
+                            <div>
+                                <label for="input-category" class="block text-sm font-semibold text-slate-700 dark:text-slate-200 mb-2">
+                                    Kategori Pembahasan <span class="text-rose-500">*</span>
+                                </label>
+                                <select id="input-category" required class="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm transition-all">
+                                    <option value="Akidah">Akidah</option>
+                                    <option value="Manhaj">Manhaj</option>
+                                    <option value="Fikih">Fikih</option>
+                                    <option value="Akhlak dan Nasihat">Akhlak dan Nasihat</option>
+                                    <option value="Artikel Remaja Muslim">Artikel Remaja Muslim</option>
+                                </select>
+                            </div>
+
+                            <!-- 3. Foto Thumbnail -->
+                            <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200/80 dark:border-slate-800 space-y-3">
+                                <label class="block text-sm font-semibold text-slate-700 dark:text-slate-200">
+                                    Foto Thumbnail Utama <span class="text-rose-500">*</span>
+                                </label>
+                                <p class="text-xs text-slate-500 dark:text-slate-400">Pilih file gambar dari perangkat Anda atau tempelkan URL gambar.</p>
+                                
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                    <div>
+                                        <label class="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-white dark:bg-slate-800 border border-dashed border-emerald-400 dark:border-emerald-700 text-emerald-700 dark:text-emerald-300 text-xs font-semibold cursor-pointer hover:bg-emerald-50 dark:hover:bg-slate-700 transition-colors">
+                                            <i data-lucide="upload" class="w-4 h-4"></i>
+                                            <span>Unggah File Thumbnail</span>
+                                            <input type="file" id="file-thumbnail" accept="image/*" onchange="handleImageUpload(event, 'thumbnail')" class="hidden">
+                                        </label>
+                                    </div>
+                                    <div>
+                                        <input type="url" id="url-thumbnail" oninput="handleImageUrlInput(this.value, 'thumbnail')" placeholder="Atau masukkan URL https://..." class="w-full px-3.5 py-2.5 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white placeholder-slate-400 text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                                    </div>
+                                </div>
+
+                                <!-- Preview Thumbnail -->
+                                <div id="preview-thumbnail-wrapper" class="hidden relative mt-2 rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700 aspect-video max-h-48 bg-slate-200 dark:bg-slate-800">
+                                    <img id="preview-thumbnail-img" src="" alt="Preview Thumbnail" class="w-full h-full object-cover">
+                                    <button type="button" onclick="clearImage('thumbnail')" class="absolute top-2 right-2 p-1.5 rounded-lg bg-black/60 text-white hover:bg-rose-600 transition-colors" title="Hapus gambar">
+                                        <i data-lucide="x" class="w-4 h-4"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- 4. Isi Artikel -->
+                            <div>
+                                <label for="input-content" class="block text-sm font-semibold text-slate-700 dark:text-slate-200 mb-2">
+                                    Isi Artikel <span class="text-rose-500">*</span>
+                                </label>
+                                <textarea id="input-content" rows="8" required placeholder="Tuliskan isi artikel secara lengkap di sini. Pisahkan antar paragraf dengan menekan tombol Enter..." class="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm leading-relaxed transition-all"></textarea>
+                                <p class="text-[11px] text-slate-400 mt-1.5">Tips: Gunakan baris kosong (Enter) untuk memisahkan paragraf agar nyaman dibaca.</p>
+                            </div>
+
+                            <!-- 5. Foto yang akan ditampilkan di dalam isi artikel -->
+                            <div class="p-4 rounded-2xl bg-emerald-50/50 dark:bg-emerald-950/20 border border-emerald-200/70 dark:border-emerald-900/50 space-y-3">
+                                <div class="flex items-center justify-between">
+                                    <label class="block text-sm font-semibold text-slate-700 dark:text-slate-200">
+                                        Foto di Dalam Isi Artikel (Opsional)
+                                    </label>
+                                    <span class="text-[11px] font-medium px-2 py-0.5 rounded bg-emerald-100 dark:bg-emerald-900 text-emerald-700 dark:text-emerald-300">Ilustrasi Bacaan</span>
+                                </div>
+                                <p class="text-xs text-slate-500 dark:text-slate-400">Foto ini akan ditampilkan di tengah isi artikel saat pembaca membuka halaman baca lengkap.</p>
+                                
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                    <div>
+                                        <label class="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-white dark:bg-slate-800 border border-dashed border-emerald-400 dark:border-emerald-700 text-emerald-700 dark:text-emerald-300 text-xs font-semibold cursor-pointer hover:bg-emerald-50 dark:hover:bg-slate-700 transition-colors">
+                                            <i data-lucide="image-plus" class="w-4 h-4"></i>
+                                            <span>Unggah Foto Isi Artikel</span>
+                                            <input type="file" id="file-inline" accept="image/*" onchange="handleImageUpload(event, 'inline')" class="hidden">
+                                        </label>
+                                    </div>
+                                    <div>
+                                        <input type="url" id="url-inline" oninput="handleImageUrlInput(this.value, 'inline')" placeholder="Atau URL foto https://..." class="w-full px-3.5 py-2.5 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white placeholder-slate-400 text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                                    </div>
+                                </div>
+
+                                <!-- Keterangan Foto Isi Artikel -->
+                                <input type="text" id="input-inline-caption" placeholder="Keterangan foto ilustrasi (opsional), misal: Suasana majelis ilmu di masjid" class="w-full px-3.5 py-2.5 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white placeholder-slate-400 text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500">
+
+                                <!-- Preview Foto Isi -->
+                                <div id="preview-inline-wrapper" class="hidden relative mt-2 rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700 aspect-video max-h-48 bg-slate-200 dark:bg-slate-800">
+                                    <img id="preview-inline-img" src="" alt="Preview Foto Isi" class="w-full h-full object-cover">
+                                    <button type="button" onclick="clearImage('inline')" class="absolute top-2 right-2 p-1.5 rounded-lg bg-black/60 text-white hover:bg-rose-600 transition-colors" title="Hapus gambar">
+                                        <i data-lucide="x" class="w-4 h-4"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Submit Button -->
+                            <div class="pt-2 flex items-center gap-3">
+                                <button type="submit" id="submit-article-btn" class="flex-1 py-3.5 px-6 rounded-xl bg-emerald-600 hover:bg-emerald-700 active:scale-[0.99] text-white font-semibold text-sm shadow-lg shadow-emerald-600/20 transition-all flex items-center justify-center gap-2">
+                                    <i data-lucide="send" class="w-4 h-4"></i>
+                                    <span>Publikasikan Artikel</span>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Kolom Kanan: Daftar Artikel Terbit (5 kolom) -->
+                <div class="lg:col-span-5">
+                    <div class="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800 p-6 shadow-sm">
+                        <div class="flex items-center justify-between pb-4 mb-4 border-b border-slate-100 dark:border-slate-800">
+                            <h2 class="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                                <i data-lucide="list-checks" class="w-5 h-5 text-emerald-600"></i>
+                                <span>Daftar Artikel Terbit</span>
+                            </h2>
+                            <span id="admin-total-badge" class="px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300">0</span>
+                        </div>
+
+                        <div id="admin-articles-list" class="space-y-3 max-h-[680px] overflow-y-auto pr-1">
+                            <!-- Rendered dynamically via JS -->
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+    </main>
+
+    <!-- ==================== ADMIN LOGIN MODAL ==================== -->
+    <div id="admin-login-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm hidden fade-in">
+        <div class="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-2xl max-w-md w-full p-6 sm:p-8 relative">
+            <button onclick="closeLoginModal()" class="absolute top-5 right-5 p-2 rounded-xl text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+
+            <div class="text-center mb-6">
+                <div class="w-14 h-14 rounded-2xl bg-emerald-600 flex items-center justify-center text-white mx-auto mb-3 shadow-lg shadow-emerald-600/30">
+                    <i data-lucide="shield-alert" class="w-7 h-7 text-amber-300"></i>
+                </div>
+                <h3 class="font-serif text-xl sm:text-2xl font-bold text-slate-900 dark:text-white">Login Panel Admin</h3>
+                <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">Masukkan kredensial redaksi untuk mengelola artikel.</p>
+            </div>
+
+            <form onsubmit="handleAdminLogin(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-300 mb-1.5">Username</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                            <i data-lucide="user" class="w-4 h-4"></i>
+                        </div>
+                        <input type="text" id="login-username" required placeholder="Masukkan username..." class="w-full pl-11 pr-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-300 mb-1.5">Password</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                            <i data-lucide="lock" class="w-4 h-4"></i>
+                        </div>
+                        <input type="password" id="login-password" required placeholder="Masukkan password..." class="w-full pl-11 pr-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                    </div>
+                </div>
+
+                <div class="pt-2">
+                    <button type="submit" class="w-full py-3.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm shadow-lg shadow-emerald-600/25 transition-all flex items-center justify-center gap-2">
+                        <i data-lucide="log-in" class="w-4 h-4"></i>
+                        <span>Masuk ke Panel Admin</span>
+                    </button>
+                </div>
+            </form>
+            <div class="mt-4 pt-4 border-t border-slate-100 dark:border-slate-800 text-center text-[11px] text-slate-400">
+                Informasi Login Redaksi: Username <span class="font-bold text-emerald-600">HILDA</span> | Password <span class="font-bold text-emerald-600">kagamish2</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-white dark:bg-slate-900 border-t border-slate-200/80 dark:border-slate-800 mt-16 transition-colors duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+            <div class="flex flex-col md:flex-row justify-between items-center gap-6">
+                <div class="flex items-center gap-3">
+                    <div class="w-9 h-9 rounded-xl bg-emerald-600 flex items-center justify-center text-white">
+                        <i data-lucide="book-open-check" class="w-4 h-4 text-amber-300"></i>
+                    </div>
+                    <div>
+                        <span class="font-serif font-bold text-lg text-slate-900 dark:text-white">Cahaya<span class="text-emerald-600 dark:text-emerald-400">Ilmu</span></span>
+                        <p class="text-xs text-slate-500 dark:text-slate-400">Portal Artikel & Kajian Islami Modern</p>
+                    </div>
+                </div>
+
+                <div class="flex flex-wrap justify-center gap-4 text-xs sm:text-sm font-medium text-slate-600 dark:text-slate-400">
+                    <button onclick="navigateTo('beranda')" class="hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors">Beranda</button>
+                    <span>•</span>
+                    <button onclick="navigateTo('kategori', 'Akidah')" class="hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors">Akidah</button>
+                    <span>•</span>
+                    <button onclick="navigateTo('kategori', 'Manhaj')" class="hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors">Manhaj</button>
+                    <span>•</span>
+                    <button onclick="navigateTo('kategori', 'Fikih')" class="hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors">Fikih</button>
+                    <span>•</span>
+                    <button onclick="navigateTo('kategori', 'Akhlak dan Nasihat')" class="hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors">Akhlak</button>
+                    <span>•</span>
+                    <button onclick="navigateTo('kategori', 'Artikel Remaja Muslim')" class="hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors">Remaja Muslim</button>
+                </div>
+            </div>
+            <div class="mt-8 pt-6 border-t border-slate-100 dark:border-slate-800/80 text-center text-xs text-slate-400 dark:text-slate-500">
+                &copy; 2026 Cahaya Ilmu. Disusun untuk menyebarkan kebaikan dan literasi Islami yang mencerahkan.
+            </div>
+        </div>
+    </footer>
+
+    <!-- ==================== JAVASCRIPT LOGIC ==================== -->
+    <script>
+        // 1. INITIAL SEED DATA (Artikel Islami Berkualitas untuk Semua Kategori)
+        const SEED_ARTICLES = [
+// ... existing code ... -->
+            {
+                id: 'art-108',
+                title: 'Keutamaan Shalat Dhuha dan Waktu Terbaik Pelaksanaannya',
+                category: 'Fikih',
+                date: '07 November 2026',
+                timestamp: 1794019200000,
+                thumbnail: 'https://images.unsplash.com/photo-1564121211835-e88c852648ab?auto=format&fit=crop&w=1000&q=80',
+                inlineImage: 'https://images.unsplash.com/photo-1542816417-0983c9c9ad53?auto=format&fit=crop&w=1000&q=80',
+                inlineCaption: 'Shalat Dhuha merupakan wujud sedekah atas seluruh persendian tubuh kita setiap pagi.',
+                content: `Setiap pagi ketika manusia bangun tidur, terdapat 360 persendian pada tubuhnya yang wajib disedekahi sebagai wujud rasa syukur atas nikmat kehidupan. Rasulullah shallallahu ‘alaihi wa sallam menjelaskan bahwa seluruh kewajiban sedekah persendian tersebut dapat tercukupi dengan mengerjakan dua rakaat shalat Dhuha.\n\nWaktu pelaksanaan shalat Dhuha dimulai sejak matahari terbit dan meninggi seukuran satu tombak (sekitar 15-20 menit setelah waktu syuruq) hingga menjelang waktu zawal (sekitar 10-15 menit sebelum masuk waktu Dzuhur).\n\nAdapun waktu yang paling utama (afdhal) untuk mengerjakannya adalah ketika matahari sudah mulai terasa panas menyengat, yaitu sekitar pukul 09.00 hingga 10.30 pagi. Jumlah rakaatnya minimal dua rakaat dan dapat dikerjakan empat, enam, delapan rakaat, atau lebih sesuai kemampuan dengan salam setiap dua rakaat.`
+            }
+        ];
+
+        // 2. STATE MANAGEMENT
+        const STORAGE_KEY = 'cahaya_ilmu_articles_v1';
+        const THEME_KEY = 'cahaya_ilmu_theme';
+        const ADMIN_AUTH_KEY = 'cahaya_ilmu_admin_logged';
+        let articles = [];
+        let currentView = 'beranda';
+        let previousView = 'beranda';
+        let currentCategoryFilter = 'Semua';
+        let currentDetailCategory = 'Akidah';
+        let uploadedThumbnailBase64 = '';
+        let uploadedInlineBase64 = '';
+
+        // 3. INITIALIZATION
+        document.addEventListener('DOMContentLoaded', () => {
+            initTheme();
+            loadArticles();
+            updateCategoryCounts();
+            renderHomeArticles();
+            renderAdminArticlesList();
+            lucide.createIcons();
+        });
+
+        // 4. THEME (DARK / LIGHT MODE) MANAGEMENT
+        function initTheme() {
+            const savedTheme = localStorage.getItem(THEME_KEY);
+            if (savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
+        }
+
+        function toggleTheme() {
+            const htmlEl = document.documentElement;
+            const isDark = htmlEl.classList.toggle('dark');
+            localStorage.setItem(THEME_KEY, isDark ? 'dark' : 'light');
+            showToast(isDark ? 'Mode Malam diaktifkan' : 'Mode Siang diaktifkan', 'info');
+        }
+
+        // 5. DATA PERSISTENCE (LOCALSTORAGE)
+        function loadArticles() {
+            try {
+                const stored = localStorage.getItem(STORAGE_KEY);
+                if (stored) {
+                    articles = JSON.parse(stored);
+                } else {
+                    articles = [...SEED_ARTICLES];
+                    saveArticlesToStorage();
+                }
+            } catch (error) {
+                console.error('Gagal memuat data artikel:', error);
+                articles = [...SEED_ARTICLES];
+            }
+            // Urutkan dari yang paling baru ditambahkan
+            articles.sort((a, b) => b.timestamp - a.timestamp);
+        }
+
+        function saveArticlesToStorage() {
+            try {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(articles));
+            } catch (e) {
+                showToast('Penyimpanan penuh! Gunakan URL gambar atau ukuran foto lebih kecil.', 'error');
+            }
+        }
+
+        // 6. NAVIGATION & ROUTING WITH ADMIN AUTH CHECK
+        function navigateTo(view, categoryParam = null) {
+            // Jika user ingin mengakses panel admin, cek status login terlebih dahulu
+            if (view === 'admin') {
+                const isLoggedIn = localStorage.getItem(ADMIN_AUTH_KEY) === 'true';
+                if (!isLoggedIn) {
+                    openLoginModal();
+                    return;
+                }
+            }
+
+            previousView = currentView;
+            currentView = view;
+
+            // Hide all views
+            document.getElementById('view-beranda').classList.add('hidden');
+            document.getElementById('view-kategori').classList.add('hidden');
+            document.getElementById('view-detail').classList.add('hidden');
+            document.getElementById('view-admin').classList.add('hidden');
+
+            // Update Active Nav Styling
+            const navBeranda = document.getElementById('nav-beranda');
+            const navKategori = document.getElementById('nav-kategori');
+            
+            const activeClass = 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/80 dark:text-emerald-300';
+            const inactiveClass = 'text-slate-600 hover:text-emerald-700 hover:bg-slate-100/80 dark:text-slate-300 dark:hover:text-emerald-300 dark:hover:bg-slate-800/80';
+
+            navBeranda.className = `nav-link px-4 py-2.5 rounded-xl text-sm font-semibold transition-all flex items-center gap-2 ${view === 'beranda' ? activeClass : inactiveClass}`;
+            navKategori.className = `nav-link px-4 py-2.5 rounded-xl text-sm font-semibold transition-all flex items-center gap-2 ${view === 'kategori' ? activeClass : inactiveClass}`;
+
+            if (view === 'beranda') {
+                document.getElementById('view-beranda').classList.remove('hidden');
+                renderHomeArticles();
+            } else if (view === 'kategori') {
+                document.getElementById('view-kategori').classList.remove('hidden');
+                selectCategoryFilter(categoryParam || currentCategoryFilter || 'Semua');
+            } else if (view === 'detail') {
+                document.getElementById('view-detail').classList.remove('hidden');
+            } else if (view === 'admin') {
+                document.getElementById('view-admin').classList.remove('hidden');
+                renderAdminArticlesList();
+            }
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            lucide.createIcons();
+        }
+
+        // 7. ADMIN AUTHENTICATION (LOGIN & LOGOUT)
+        function openLoginModal() {
+            document.getElementById('admin-login-modal').classList.remove('hidden');
+            document.getElementById('login-username').value = '';
+            document.getElementById('login-password').value = '';
+            lucide.createIcons();
+        }
+
+        function closeLoginModal() {
+            document.getElementById('admin-login-modal').classList.add('hidden');
+        }
+
+        function handleAdminLogin(event) {
+            event.preventDefault();
+            const usernameInput = document.getElementById('login-username').value.trim();
+            const passwordInput = document.getElementById('login-password').value.trim();
+
+            if (usernameInput === 'HILDA' && passwordInput === 'kagamish2') {
+                localStorage.setItem(ADMIN_AUTH_KEY, 'true');
+                closeLoginModal();
+                showToast('Login Admin Berhasil! Selamat datang, HILDA.', 'success');
+                navigateTo('admin');
+            } else {
+                showToast('Username atau Password salah! (Gunakan HILDA / kagamish2)', 'error');
+            }
+        }
+
+        function adminLogout() {
+            localStorage.removeItem(ADMIN_AUTH_KEY);
+            showToast('Anda telah berhasil logout dari panel admin.', 'info');
+            navigateTo('beranda');
+        }
+
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobile-menu');
+            menu.classList.toggle('hidden');
+        }
+
+        // 8. CATEGORY BADGE COLORS HELPER
+        function getCategoryBadgeStyle(category) {
+            const styles = {
+                'Akidah': 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950/90 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800',
+                'Manhaj': 'bg-teal-100 text-teal-800 dark:bg-teal-950/90 dark:text-teal-300 border-teal-200 dark:border-teal-800',
+                'Fikih': 'bg-amber-100 text-amber-800 dark:bg-amber-950/90 dark:text-amber-300 border-amber-200 dark:border-amber-800',
+                'Akhlak dan Nasihat': 'bg-rose-100 text-rose-800 dark:bg-rose-950/90 dark:text-rose-300 border-rose-200 dark:border-rose-800',
+                'Artikel Remaja Muslim': 'bg-indigo-100 text-indigo-800 dark:bg-indigo-950/90 dark:text-indigo-300 border-indigo-200 dark:border-indigo-800'
+            };
+            return styles[category] || styles['Akidah'];
+        }
+
+        function updateCategoryCounts() {
+            const categories = ['Akidah', 'Manhaj', 'Fikih', 'Akhlak dan Nasihat', 'Artikel Remaja Muslim'];
+            categories.forEach(cat => {
+                const count = articles.filter(a => a.category === cat).length;
+                const el = document.getElementById(`count-${cat}`);
+                if (el) el.textContent = count;
+            });
+        }
+
+        // 9. RENDER ARTICLE CARDS (BERANDA & KATEGORI)
+        function createArticleCardHTML(article) {
+            const badgeStyle = getCategoryBadgeStyle(article.category);
+            const excerpt = article.content.replace(/\n+/g, ' ').slice(0, 130) + '...';
+            const fallbackImg = 'https://placehold.co/800x500/065f46/ffffff?text=Cahaya+Ilmu';
+
+            return `
+                <article onclick="openArticleDetail('${article.id}')" class="group cursor-pointer bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800 overflow-hidden shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col">
+                    <!-- Thumbnail Container -->
+                    <div class="relative aspect-[16/10] w-full overflow-hidden bg-slate-200 dark:bg-slate-800">
+                        <img src="${article.thumbnail || fallbackImg}" alt="${escapeHtml(article.title)}" onerror="this.src='${fallbackImg}'" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                        <div class="absolute top-3.5 left-3.5">
+                            <span class="px-3 py-1 rounded-full text-[11px] font-bold border shadow-sm backdrop-blur-md ${badgeStyle}">
+                                ${escapeHtml(article.category)}
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Card Body -->
+                    <div class="p-6 flex-grow flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center gap-2 text-xs text-slate-400 dark:text-slate-500 mb-2.5">
+                                <i data-lucide="calendar" class="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400"></i>
+                                <span>${escapeHtml(article.date)}</span>
+                            </div>
+                            <h3 class="font-serif text-lg sm:text-xl font-bold text-slate-900 dark:text-white group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors line-clamp-2 mb-3 leading-snug">
+                                ${escapeHtml(article.title)}
+                            </h3>
+                            <p class="text-sm text-slate-600 dark:text-slate-400 line-clamp-3 leading-relaxed mb-5">
+                                ${escapeHtml(excerpt)}
+                            </p>
+                        </div>
+
+                        <div class="pt-4 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between text-xs font-bold text-emerald-600 dark:text-emerald-400">
+                            <span>Baca Selengkapnya</span>
+                            <span class="w-7 h-7 rounded-full bg-emerald-50 dark:bg-emerald-950/70 flex items-center justify-center group-hover:bg-emerald-600 group-hover:text-white transition-colors">
+                                <i data-lucide="arrow-up-right" class="w-4 h-4"></i>
+                            </span>
+                        </div>
+                    </div>
+                </article>
+            `;
+        }
+
+        function renderHomeArticles(searchQuery = '') {
+            const grid = document.getElementById('home-articles-grid');
+            const emptyState = document.getElementById('home-empty-state');
+            
+            let filtered = articles;
+            if (searchQuery.trim() !== '') {
+                const q = searchQuery.toLowerCase();
+                filtered = articles.filter(a => 
+                    a.title.toLowerCase().includes(q) || 
+                    a.category.toLowerCase().includes(q) ||
+                    a.content.toLowerCase().includes(q)
+                );
+            }
+
+            if (filtered.length === 0) {
+                grid.innerHTML = '';
+                emptyState.classList.remove('hidden');
+            } else {
+                emptyState.classList.add('hidden');
+                grid.innerHTML = filtered.map(createArticleCardHTML).join('');
+            }
+            lucide.createIcons();
+        }
+
+        function handleHomeSearch(val) {
+            renderHomeArticles(val);
+        }
+
+        // 10. CATEGORY FILTERING LOGIC
+        function selectCategoryFilter(category) {
+            currentCategoryFilter = category;
+
+            // Update Tab Pills UI
+            const tabs = document.querySelectorAll('.cat-tab');
+            tabs.forEach(tab => {
+                if (tab.dataset.cat === category) {
+                    tab.className = 'cat-tab shrink-0 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all bg-emerald-600 text-white shadow-sm';
+                } else {
+                    tab.className = 'cat-tab shrink-0 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-emerald-50 dark:hover:bg-slate-700';
+                }
+            });
+
+            // Descriptions per category
+            const descriptions = {
+                'Semua': 'Menampilkan seluruh artikel Islami dari berbagai bidang kajian.',
+                'Akidah': 'Pembahasan keimanan, tauhid, dan keyakinan lurus seorang Muslim.',
+                'Manhaj': 'Metode beragama yang benar sesuai pemahaman generasi terbaik umat Islam.',
+                'Fikih': 'Panduan hukum dan tata cara ibadah sehari-hari sesuai tuntunan syariat.',
+                'Akhlak dan Nasihat': 'Penyucian jiwa, adab pergaulan, dan untaian hikmah penyejuk hati.',
+                'Artikel Remaja Muslim': 'Inspirasi, motivasi, dan bimbingan Islami khusus untuk generasi muda.'
+            };
+
+            document.getElementById('category-page-title').textContent = category === 'Semua' ? 'Semua Kategori Artikel' : `Kategori: ${category}`;
+            document.getElementById('category-page-desc').textContent = descriptions[category] || '';
+
+            const filtered = category === 'Semua' ? articles : articles.filter(a => a.category === category);
+            document.getElementById('category-article-count').textContent = filtered.length;
+
+            const grid = document.getElementById('category-articles-grid');
+            const emptyState = document.getElementById('category-empty-state');
+
+            if (filtered.length === 0) {
+                grid.innerHTML = '';
+                emptyState.classList.remove('hidden');
+            } else {
+                emptyState.classList.add('hidden');
+                grid.innerHTML = filtered.map(createArticleCardHTML).join('');
+            }
+            lucide.createIcons();
+        }
+
+        // 11. DETAIL ARTICLE READER
+        function openArticleDetail(articleId) {
+            const article = articles.find(a => a.id === articleId);
+            if (!article) return;
+
+            currentDetailCategory = article.category;
+            const fallbackImg = 'https://placehold.co/1200x600/065f46/ffffff?text=Cahaya+Ilmu';
+
+            document.getElementById('detail-thumbnail').src = article.thumbnail || fallbackImg;
+            document.getElementById('detail-category').textContent = article.category;
+            document.getElementById('detail-category').className = `px-3.5 py-1 rounded-full text-xs font-bold uppercase tracking-wider border ${getCategoryBadgeStyle(article.category)}`;
+            document.getElementById('detail-date').textContent = article.date;
+            document.getElementById('detail-title').textContent = article.title;
+
+            // Format paragraphs and insert inline image neatly in the middle of the article
+            const paragraphs = article.content.split(/\n+/).filter(p => p.trim() !== '');
+            const insertIndex = Math.max(1, Math.floor(paragraphs.length / 2));
+            
+            let bodyHTML = '';
+            paragraphs.forEach((para, idx) => {
+                bodyHTML += `<p>${escapeHtml(para)}</p>`;
+                
+                // Render inline image after middle paragraph if provided by admin
+                if (idx === insertIndex - 1 && article.inlineImage && article.inlineImage.trim() !== '') {
+                    bodyHTML += `
+                        <figure class="my-8 rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/50 shadow-sm">
+                            <img src="${article.inlineImage}" alt="Ilustrasi Artikel" onerror="this.parentElement.style.display='none'" class="w-full max-h-[460px] object-cover">
+                            ${article.inlineCaption ? `<figcaption class="px-5 py-3 text-xs sm:text-sm text-slate-500 dark:text-slate-400 italic text-center border-t border-slate-200/60 dark:border-slate-800">${escapeHtml(article.inlineCaption)}</figcaption>` : ''}
+                        </figure>
+                    `;
+                }
+            });
+
+            document.getElementById('detail-content').innerHTML = bodyHTML;
+            navigateTo('detail');
+        }
+
+        function goBackFromDetail() {
+            if (previousView === 'kategori') {
+                navigateTo('kategori', currentCategoryFilter);
+            } else {
+                navigateTo('beranda');
+            }
+        }
+
+        function copyArticleLink() {
+            const dummyInput = document.createElement('input');
+            dummyInput.value = window.location.href;
+            document.body.appendChild(dummyInput);
+            dummyInput.select();
+            document.execCommand('copy');
+            document.body.removeChild(dummyInput);
+            showToast('Tautan artikel berhasil disalin!', 'success');
+        }
+
+        // 12. ADMIN PANEL: IMAGE UPLOAD & PREVIEW HANDLING
+        function handleImageUpload(event, type) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            if (!file.type.startsWith('image/')) {
+                showToast('Harap pilih file gambar yang valid (JPG, PNG, WebP).', 'error');
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = new Image();
+                img.onload = function() {
+                    const canvas = document.createElement('canvas');
+                    const MAX_WIDTH = 900;
+                    let width = img.width;
+                    let height = img.height;
+
+                    if (width > MAX_WIDTH) {
+                        height *= MAX_WIDTH / width;
+                        width = MAX_WIDTH;
+                    }
+
+                    canvas.width = width;
+                    canvas.height = height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, width, height);
+                    
+                    const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.8);
+
+                    if (type === 'thumbnail') {
+                        uploadedThumbnailBase64 = compressedDataUrl;
+                        document.getElementById('url-thumbnail').value = '';
+                        showImagePreview('thumbnail', compressedDataUrl);
+                    } else {
+                        uploadedInlineBase64 = compressedDataUrl;
+                        document.getElementById('url-inline').value = '';
+                        showImagePreview('inline', compressedDataUrl);
+                    }
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function handleImageUrlInput(url, type) {
+            if (url.trim() !== '') {
+                if (type === 'thumbnail') uploadedThumbnailBase64 = '';
+                if (type === 'inline') uploadedInlineBase64 = '';
+                showImagePreview(type, url.trim());
+            } else {
+                clearImage(type);
+            }
+        }
+
+        function showImagePreview(type, src) {
+            const wrapper = document.getElementById(`preview-${type}-wrapper`);
+            const img = document.getElementById(`preview-${type}-img`);
+            img.src = src;
+            wrapper.classList.remove('hidden');
+        }
+
+        function clearImage(type) {
+            if (type === 'thumbnail') {
+                uploadedThumbnailBase64 = '';
+                document.getElementById('file-thumbnail').value = '';
+                document.getElementById('url-thumbnail').value = '';
+            } else {
+                uploadedInlineBase64 = '';
+                document.getElementById('file-inline').value = '';
+                document.getElementById('url-inline').value = '';
+            }
+            document.getElementById(`preview-${type}-wrapper`).classList.add('hidden');
+            document.getElementById(`preview-${type}-img`).src = '';
+        }
+
+        // 13. ADMIN PANEL: CREATE, EDIT, DELETE ARTICLES
+        function handleSaveArticle(event) {
+            event.preventDefault();
+
+            const editId = document.getElementById('edit-article-id').value;
+            const title = document.getElementById('input-title').value.trim();
+            const category = document.getElementById('input-category').value;
+            const content = document.getElementById('input-content').value.trim();
+            const inlineCaption = document.getElementById('input-inline-caption').value.trim();
+
+            const urlThumb = document.getElementById('url-thumbnail').value.trim();
+            const finalThumbnail = uploadedThumbnailBase64 || urlThumb || 'https://images.unsplash.com/photo-1542816417-0983c9c9ad53?auto=format&fit=crop&w=1000&q=80';
+
+            const urlInline = document.getElementById('url-inline').value.trim();
+            const finalInlineImage = uploadedInlineBase64 || urlInline || '';
+
+            if (!title || !content) {
+                showToast('Judul dan isi artikel wajib diisi!', 'error');
+                return;
+            }
+
+            if (editId) {
+                const index = articles.findIndex(a => a.id === editId);
+                if (index !== -1) {
+                    articles[index] = {
+                        ...articles[index],
+                        title,
+                        category,
+                        thumbnail: finalThumbnail,
+                        content,
+                        inlineImage: finalInlineImage,
+                        inlineCaption
+                    };
+                    showToast('Artikel berhasil diperbarui!', 'success');
+                }
+            } else {
+                const now = new Date();
+                const months = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+                const formattedDate = `${now.getDate()} ${months[now.getMonth()]} ${now.getFullYear()}`;
+
+                const newArticle = {
+                    id: 'art-' + Date.now(),
+                    title,
+                    category,
+                    date: formattedDate,
+                    timestamp: Date.now(),
+                    thumbnail: finalThumbnail,
+                    inlineImage: finalInlineImage,
+                    inlineCaption,
+                    content
+                };
+
+                articles.unshift(newArticle);
+                showToast('Artikel baru berhasil dipublikasikan!', 'success');
+            }
+
+            saveArticlesToStorage();
+            updateCategoryCounts();
+            renderHomeArticles();
+            renderAdminArticlesList();
+            resetAdminForm();
+        }
+
+        function editArticle(articleId) {
+            const article = articles.find(a => a.id === articleId);
+            if (!article) return;
+
+            document.getElementById('edit-article-id').value = article.id;
+            document.getElementById('input-title').value = article.title;
+            document.getElementById('input-category').value = article.category;
+            document.getElementById('input-content').value = article.content;
+            document.getElementById('input-inline-caption').value = article.inlineCaption || '';
+
+            if (article.thumbnail.startsWith('data:image')) {
+                uploadedThumbnailBase64 = article.thumbnail;
+                document.getElementById('url-thumbnail').value = '';
+            } else {
+                uploadedThumbnailBase64 = '';
+                document.getElementById('url-thumbnail').value = article.thumbnail;
+            }
+            showImagePreview('thumbnail', article.thumbnail);
+
+            if (article.inlineImage) {
+                if (article.inlineImage.startsWith('data:image')) {
+                    uploadedInlineBase64 = article.inlineImage;
+                    document.getElementById('url-inline').value = '';
+                } else {
+                    uploadedInlineBase64 = '';
+                    document.getElementById('url-inline').value = article.inlineImage;
+                }
+                showImagePreview('inline', article.inlineImage);
+            } else {
+                clearImage('inline');
+            }
+
+            document.getElementById('admin-form-heading').innerHTML = `<i data-lucide="edit-3" class="w-5 h-5 text-amber-500"></i><span>Edit Artikel</span>`;
+            document.getElementById('submit-article-btn').innerHTML = `<i data-lucide="check-circle" class="w-4 h-4"></i><span>Simpan Perubahan</span>`;
+            document.getElementById('cancel-edit-btn').classList.remove('hidden');
+            
+            lucide.createIcons();
+            document.getElementById('view-admin').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function deleteArticle(articleId) {
+            const index = articles.findIndex(a => a.id === articleId);
+            if (index === -1) return;
+
+            articles.splice(index, 1);
+            saveArticlesToStorage();
+            updateCategoryCounts();
+            renderHomeArticles();
+            renderAdminArticlesList();
+            
+            if (document.getElementById('edit-article-id').value === articleId) {
+                resetAdminForm();
+            }
+            showToast('Artikel telah dihapus.', 'info');
+        }
+
+        function resetAdminForm() {
+            document.getElementById('admin-article-form').reset();
+            document.getElementById('edit-article-id').value = '';
+            clearImage('thumbnail');
+            clearImage('inline');
+
+            document.getElementById('admin-form-heading').innerHTML = `<i data-lucide="file-plus-2" class="w-5 h-5 text-emerald-600"></i><span>Input Artikel Baru</span>`;
+            document.getElementById('submit-article-btn').innerHTML = `<i data-lucide="send" class="w-4 h-4"></i><span>Publikasikan Artikel</span>`;
+            document.getElementById('cancel-edit-btn').classList.add('hidden');
+            lucide.createIcons();
+        }
+
+        function renderAdminArticlesList() {
+            const listContainer = document.getElementById('admin-articles-list');
+            document.getElementById('admin-total-badge').textContent = `${articles.length} Artikel`;
+
+            if (articles.length === 0) {
+                listContainer.innerHTML = `<p class="text-sm text-slate-400 text-center py-8">Belum ada artikel yang dipublikasikan.</p>`;
+                return;
+            }
+
+            const fallbackImg = 'https://placehold.co/200x150/065f46/ffffff?text=CI';
+            listContainer.innerHTML = articles.map(article => `
+                <div class="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/70 dark:border-slate-800 flex items-center gap-3.5 hover:border-emerald-300 dark:hover:border-emerald-800 transition-all">
+                    <img src="${article.thumbnail || fallbackImg}" alt="Thumb" onerror="this.src='${fallbackImg}'" class="w-16 h-16 rounded-xl object-cover shrink-0 bg-slate-200 dark:bg-slate-700">
+                    <div class="flex-grow min-w-0">
+                        <span class="inline-block text-[10px] font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400 mb-0.5">${escapeHtml(article.category)}</span>
+                        <h4 class="text-sm font-bold text-slate-900 dark:text-white truncate" title="${escapeHtml(article.title)}">${escapeHtml(article.title)}</h4>
+                        <p class="text-[11px] text-slate-400 mt-0.5">${escapeHtml(article.date)}</p>
+                    </div>
+                    <div class="flex items-center gap-1.5 shrink-0">
+                        <button onclick="openArticleDetail('${article.id}')" title="Lihat Artikel" class="p-2 rounded-lg bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:text-emerald-600 border border-slate-200 dark:border-slate-700 transition-colors">
+                            <i data-lucide="eye" class="w-3.5 h-3.5"></i>
+                        </button>
+                        <button onclick="editArticle('${article.id}')" title="Edit Artikel" class="p-2 rounded-lg bg-white dark:bg-slate-800 text-amber-600 hover:bg-amber-50 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 transition-colors">
+                            <i data-lucide="pencil" class="w-3.5 h-3.5"></i>
+                        </button>
+                        <button onclick="deleteArticle('${article.id}')" title="Hapus Artikel" class="p-2 rounded-lg bg-white dark:bg-slate-800 text-rose-600 hover:bg-rose-50 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 transition-colors">
+                            <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+            lucide.createIcons();
+        }
+
+        // 14. UTILITIES (TOAST MESSAGE & HTML ESCAPING)
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            
+            const colors = {
+                success: 'bg-emerald-600 text-white',
+                error: 'bg-rose-600 text-white',
+                info: 'bg-slate-800 dark:bg-slate-700 text-white'
+            };
+
+            toast.className = `pointer-events-auto px-4 py-3 rounded-xl shadow-lg text-xs sm:text-sm font-semibold flex items-center gap-2.5 transform transition-all duration-300 translate-y-2 opacity-0 ${colors[type] || colors.info}`;
+            toast.innerHTML = `<span>${escapeHtml(message)}</span>`;
+            
+            container.appendChild(toast);
+            requestAnimationFrame(() => {
+                toast.classList.remove('translate-y-2', 'opacity-0');
+            });
+
+            setTimeout(() => {
+                toast.classList.add('translate-y-2', 'opacity-0');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+    </script>
+</body>
+</html>
